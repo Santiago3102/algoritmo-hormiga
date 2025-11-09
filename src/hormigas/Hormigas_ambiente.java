@@ -9,12 +9,34 @@ public class Hormigas_ambiente
    private double mFeromonas_en_el_camino[];
    private double mProbabilidades_de_ser_elegido[];
    private int mVeces_que_ha_sido_elegido[];
+   private String nombreDeposito;
    
    public final double cnt_P_coeficiente_de_evaporacion_de_las_feromonas = 0.1;
    public final double cnt_Alfa = 1.68309;
    public final double cnt_Beta = 1.28264;
 
+   // Constructor para Deposito H (original)
    public Hormigas_ambiente()
+   {
+      this.nombreDeposito = "H";
+      inicializarDepositoH();
+   }
+
+   // Constructor para seleccionar el deposito
+   public Hormigas_ambiente(String tipoDeposito)
+   {
+      this.nombreDeposito = tipoDeposito;
+      if (tipoDeposito.equals("B"))
+      {
+         inicializarDepositoB();
+      }
+      else
+      {
+         inicializarDepositoH();
+      }
+   }
+
+   private void inicializarDepositoH()
    {
       mCaminos = new String[14];
       
@@ -60,6 +82,65 @@ public class Hormigas_ambiente
       this.mLogitudes[12] = 5;
       this.mLogitudes[13] = 7;
 
+      inicializarArraysComunes();
+   }
+
+   private void inicializarDepositoB()
+   {
+      // Basado en el grafo del Deposito B
+      mCaminos = new String[15];
+      
+      this.mCaminos[0] = "A a S";
+      this.mCaminos[1] = "A a H";
+      this.mCaminos[2] = "A a P";
+      this.mCaminos[3] = "S a C";
+      this.mCaminos[4] = "C a F";
+      this.mCaminos[5] = "C a B";
+      this.mCaminos[6] = "P a B";
+      this.mCaminos[7] = "P a D";
+      this.mCaminos[8] = "H a D";
+      this.mCaminos[9] = "H a B";
+      this.mCaminos[10] = "B a E";
+      this.mCaminos[11] = "B a G";
+      this.mCaminos[12] = "D a G";
+      this.mCaminos[13] = "G a E";
+      this.mCaminos[14] = "F a E";
+
+      this.mNodos = new String[10];
+      this.mNodos[0] = "A";
+      this.mNodos[1] = "S";
+      this.mNodos[2] = "C";
+      this.mNodos[3] = "F";
+      this.mNodos[4] = "P";
+      this.mNodos[5] = "B";
+      this.mNodos[6] = "H";
+      this.mNodos[7] = "D";
+      this.mNodos[8] = "G";
+      this.mNodos[9] = "E";
+
+      // Longitudes según el grafo del Deposito B
+      this.mLogitudes = new double[this.mCaminos.length];
+      this.mLogitudes[0] = 5;   // A-S
+      this.mLogitudes[1] = 10;  // A-H
+      this.mLogitudes[2] = 3;   // A-P
+      this.mLogitudes[3] = 3;   // S-C
+      this.mLogitudes[4] = 7;   // C-F
+      this.mLogitudes[5] = 5;   // C-B
+      this.mLogitudes[6] = 6;   // P-B
+      this.mLogitudes[7] = 12;  // P-D
+      this.mLogitudes[8] = 2;   // H-D
+      this.mLogitudes[9] = 9;   // H-B
+      this.mLogitudes[10] = 4;  // B-E
+      this.mLogitudes[11] = 6;  // B-G
+      this.mLogitudes[12] = 3;  // D-G
+      this.mLogitudes[13] = 15; // G-E
+      this.mLogitudes[14] = 1;  // F-E
+
+      inicializarArraysComunes();
+   }
+
+   private void inicializarArraysComunes()
+   {
       this.mVisibilidad = new double[this.mLogitudes.length];
       for (int i = 0; i < this.mLogitudes.length; i++)
       {
@@ -78,6 +159,7 @@ public class Hormigas_ambiente
 
    public Hormigas_ambiente(int nueva_cantidad_de_caminos, int nueva_cantidad_de_nodos)
    {
+      this.nombreDeposito = "Personalizado";
       this.mCaminos = new String[nueva_cantidad_de_caminos];
       this.mNodos = new String[nueva_cantidad_de_nodos];
       
@@ -97,6 +179,11 @@ public class Hormigas_ambiente
       
       this.mProbabilidades_de_ser_elegido = new double[nueva_cantidad_de_caminos];
       this.mVeces_que_ha_sido_elegido = new int[nueva_cantidad_de_caminos];
+   }
+
+   public String getNombreDeposito()
+   {
+      return this.nombreDeposito;
    }
 
    public void setCaminos(String nuevos_caminos[])
@@ -190,7 +277,7 @@ public class Hormigas_ambiente
    public String toString()
    {
       String vDatos_del_camino = "════════════════════════════════════════════════════════\n";
-      vDatos_del_camino += "   ALGORITMO DE COLONIA DE HORMIGAS - DEPOSITO H\n";
+      vDatos_del_camino += "   ALGORITMO DE COLONIA DE HORMIGAS - DEPOSITO " + this.nombreDeposito + "\n";
       vDatos_del_camino += "════════════════════════════════════════════════════════\n\n";
       
       vDatos_del_camino += "NODOS DEL GRAFO: ";
@@ -201,19 +288,10 @@ public class Hormigas_ambiente
       }
       vDatos_del_camino += "\n\n";
 
-      int vContador_de_nodos = 0;
-
       for (int i = 0; i < this.mCaminos.length; i++)
       {
          vDatos_del_camino += "--- CAMINO " + (i + 1) + " ---\n";
          vDatos_del_camino += "Ruta: " + this.mCaminos[i] + "\n";
-         
-         if (vContador_de_nodos < this.mNodos.length)
-         {
-            vDatos_del_camino += "Nodo actual: " + this.mNodos[vContador_de_nodos] + "\n";
-            vContador_de_nodos++;
-         }
-         
          vDatos_del_camino += "Longitud: " + this.mLogitudes[i] + "\n";
          vDatos_del_camino += "Visibilidad: " + String.format("%.4f", this.mVisibilidad[i]) + "\n";
          vDatos_del_camino += "Feromonas: " + String.format("%.4f", this.mFeromonas_en_el_camino[i]) + "\n";
